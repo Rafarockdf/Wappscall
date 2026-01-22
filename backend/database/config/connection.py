@@ -9,7 +9,7 @@ sys.path.insert(0, caminho_absoluto)
 # Conexão não está estruturada corretamente ainda
 
 class DBConnectionHandler:
-    BASE_DIR = Path(r"C:\Users\dtiDigital\Desktop\Minicurso_UFU\data\db\DW.db")
+    BASE_DIR = Path(r"../wappscall_db.db")
     def __init__(self,BASE_DIR=BASE_DIR):
         self.db_path = r"C:\Users\dtiDigital\Desktop\Minicurso_UFU\data\db\DW.db"
         self.__engine = self.__create_database_engine()
