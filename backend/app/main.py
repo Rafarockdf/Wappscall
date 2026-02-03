@@ -12,7 +12,7 @@ from typing import List
 from sqlalchemy.orm import Session
 # Certifique-se de que estes arquivos existem no seu projeto
 #from schemas import Mensagem
-from backend.database.models import models
+#from backend.database.models import models
 #from database import engine, get_db
 from fastapi.middleware.cors import CORSMiddleware
 # Cria as tabelas no banco de dados
