@@ -1,7 +1,6 @@
 import os
 import sys
 from PIL import Image
-from pdf2image import convert_from_bytes
 from fastapi import UploadFile
 from dotenv import load_dotenv
 import io
