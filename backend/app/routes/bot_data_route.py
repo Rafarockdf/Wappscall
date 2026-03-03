@@ -1,15 +1,16 @@
 from fastapi import APIRouter, UploadFile, File, Form
 import shutil
 import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+from backend.app.services.image_service import save_image_file
+
 
 router = APIRouter()
 
 @router.post("/uploads")
-async def upload_file(file: UploadFile, amount: float):
-    # 1. Chama função para salvar fisicamente no storage/
-    #file_path = storage_service.save_file(file) 
-    
-    # 2. Chama função do database/ para registrar
-    #repository.save_expense_to_db(db, {"amount": amount}, file_path)
+async def upload_file(file: UploadFile):
+    await save_image_file(file)
     
     return {"status": "sucesso"}

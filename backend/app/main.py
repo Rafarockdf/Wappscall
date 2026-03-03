@@ -1,15 +1,16 @@
 import os
 import sys
-
-from backend.app.routes import bot_data_route
-
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
+from backend.app.routes import bot_data_route
 
 
-from fastapi import FastAPI, Depends, status, APIRouter
+
+from backend.app.services.image_service import save_image_file
+
+from fastapi import FastAPI, Depends, status, APIRouter, UploadFile
 from typing import List
-from sqlalchemy.orm import Session
+#from sqlalchemy.orm import Session
 # Certifique-se de que estes arquivos existem no seu projeto
 #from schemas import Mensagem
 #from backend.database.models import models
