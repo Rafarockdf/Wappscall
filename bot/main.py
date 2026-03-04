@@ -1,33 +1,23 @@
-import telebot
 import asyncio
-from telebot.async_telebot import AsyncTeleBot
 import os
-import sys
-
-caminho_absoluto = os.path.abspath(os.curdir)
-sys.path.insert(0, caminho_absoluto)
-
-from bot.handlers.message_handler import register_handlers
 from dotenv import load_dotenv
+from telebot.async_telebot import AsyncTeleBot
+from bot.handlers.message_handler import register_handlers
 
-
+# Carrega as variáveis do arquivo .env
 load_dotenv()
+TOKEN = os.getenv("TOKEN_BOT_TELEGRAM")
+print(f"DEBUG: O token que o bot está usando termina em: {TOKEN[-5:]}")
 
-TOKEN_BOT_TELEGRAM = os.getenv("TOKEN_BOT_TELEGRAM")
+# Cria a instância do bot globalmente
+bot = AsyncTeleBot(TOKEN)
 
 async def main():
-    # 1. Instancia o bot
-    bot = AsyncTeleBot(TOKEN_BOT_TELEGRAM)
-
-    # 2. Registra os handlers (comandos)
-    await register_handlers(bot)
-
-    # 3. Inicia o monitoramento de mensagens
     print("Bot rodando...")
+    # Registra os comandos e handlers
+    register_handlers(bot) 
+    # Inicia a escuta de mensagens
     await bot.infinity_polling()
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\nBot desligado manualmente.")
+    asyncio.run(main())
