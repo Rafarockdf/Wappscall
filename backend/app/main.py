@@ -19,13 +19,13 @@ from fastapi.middleware.cors import CORSMiddleware
 # Cria as tabelas no banco de dados
 #models.Base.metadata.create_all(bind=engine)
 from backend.app.routes import bot_data_route
-
+from backend.app.routes import scrape_pdf_email
 
 app = FastAPI()
 
 
 app.include_router(bot_data_route.router, prefix="/uploads")
-
+app.include_router(scrape_pdf_email.router)
 # Configuração para permitir que o React converse com o FastAPI
 origins = [
     "http://localhost:3001", # Porta padrão do React
