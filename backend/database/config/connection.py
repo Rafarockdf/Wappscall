@@ -4,14 +4,15 @@ from pathlib import Path
 import os
 import sys
 
+
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 # Conexão não está estruturada corretamente ainda
 
 class DBConnectionHandler:
-    BASE_DIR = Path(r"../wappscall_db.db")
+    BASE_DIR = Path(r"backend/database/wappscall_db.db")
     def __init__(self,BASE_DIR=BASE_DIR):
-        self.db_path = r"C:\Users\dtiDigital\Desktop\Minicurso_UFU\data\db\DW.db"
+        self.db_path = BASE_DIR
         self.__engine = self.__create_database_engine()
         self.session = None
 
@@ -32,3 +33,6 @@ class DBConnectionHandler:
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.session.close()
+
+    def create_tables(self, Base):
+        Base.metadata.create_all(self.__engine)
