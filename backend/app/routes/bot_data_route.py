@@ -10,7 +10,7 @@ from backend.app.services.image_service import save_image_file
 router = APIRouter()
 
 @router.post("/uploads")
-async def upload_file(file: UploadFile):
-    await save_image_file(file)
+async def upload_file(file: UploadFile = File(...), telefone: str = Form(...)):
+    await save_image_file(file, telefone)
     
     return {"status": "sucesso"}

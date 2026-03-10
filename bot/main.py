@@ -2,12 +2,12 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from telebot.async_telebot import AsyncTeleBot
-from bot.handlers.message_handler import register_handlers
+from handlers.message_handler import register_handlers
 
 # Carrega as variáveis do arquivo .env
 load_dotenv()
 TOKEN = os.getenv("TOKEN_BOT_TELEGRAM")
-print(f"DEBUG: O token que o bot está usando termina em: {TOKEN[-5:]}")
+#print(f"DEBUG: O token que o bot está usando termina em: {TOKEN[-5:]}")
 
 # Cria a instância do bot globalmente
 bot = AsyncTeleBot(TOKEN)

@@ -7,13 +7,16 @@ from dotenv import load_dotenv
 import io
 import shutil
 from pathlib import Path
+
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
+from backend.app.services.data_hora_atual import obter_data_hora_atual
 load_dotenv()
-async def save_image_file(file: UploadFile):
+async def save_image_file(file: UploadFile, telefone: str):
     # 1. Puxar o caminho da variável de ambiente (com um fallback para 'uploads')
     pasta_destino = os.getenv('CAMINHO_ARQUIVOS')
     print(file.content_type)
+    print(telefone)
     # 2. Criar a pasta se ela não existir
     if not os.path.exists(pasta_destino):
         os.makedirs(pasta_destino)
@@ -27,7 +30,8 @@ async def save_image_file(file: UploadFile):
 
             # 4. Definir o caminho final
             # Usamos o nome original do arquivo ou um nome padrão
-            nome_arquivo = f"copy_{file.filename}"
+            data_hora_atual = obter_data_hora_atual()
+            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
             caminho_final = os.path.join(pasta_destino_img, nome_arquivo)
 
             # 5. Salvar a imagem
@@ -44,8 +48,9 @@ async def save_image_file(file: UploadFile):
         try:
             pasta_destino_pdf = pasta_destino + '/pdf'
             # Ler o conteúdo do PDF
-
-            caminho_completo = os.path.join(pasta_destino_pdf, file.filename)
+            data_hora_atual = obter_data_hora_atual()
+            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
+            caminho_completo = os.path.join(pasta_destino_pdf, nome_arquivo)
 
             with open(caminho_completo, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
