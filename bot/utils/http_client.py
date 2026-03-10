@@ -1,19 +1,19 @@
 import aiohttp
-import io
 
 class BackendClient:
     def __init__(self, base_url: str):
         self.base_url = base_url
 
-    async def upload_comprovante(self, file_bytes: bytes, file_name: str):
-        url = f"{self.base_url}/uploads"
+    async def upload_comprovante(self, file_bytes: bytes, file_name: str, content_type: str):
+        # Rota correta conforme o seu backend/app/main.py
+        url = f"{self.base_url.rstrip('/')}/uploads/uploads"
         
-        # Prepara o formulário para envio do arquivo
         data = aiohttp.FormData()
+        # Aqui enviamos o arquivo com o NOME ORIGINAL e o TIPO correto
         data.add_field('file', 
                        file_bytes, 
                        filename=file_name, 
-                       content_type='application/octet-stream')
+                       content_type=content_type)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(url, data=data) as response:
