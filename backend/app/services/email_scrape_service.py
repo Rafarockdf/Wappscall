@@ -68,7 +68,7 @@ async def scrape_emails_from_gmail():
                     print(f"Assunto: {email.subject}")
                     print(f"Data:    {email.date}")
                     print("-" * 50)
-                    cnpj_tratado = resultado_anexos[0]["cnpj"].replace(".", "").replace("/", "").replace("-", "")
+                    cnpj_tratado = resultado_anexos[0]["cnpj"]
                     print(f"Empresa: {resultado_anexos[0]['empresa']}")
                     print(f"CNPJ:    {resultado_anexos[0]['cnpj']}")
                     print(f"CNPJTTT:    {cnpj_tratado}")
