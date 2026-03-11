@@ -11,6 +11,7 @@ from pathlib import Path
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from backend.app.services.data_hora_atual import obter_data_hora_atual
+from backend.app.services.api_gemini import scrape_images_from_gemini
 load_dotenv()
 async def save_image_file(file: UploadFile, telefone: str):
     # 1. Puxar o caminho da variável de ambiente (com um fallback para 'uploads')
@@ -37,9 +38,13 @@ async def save_image_file(file: UploadFile, telefone: str):
             # 5. Salvar a imagem
             # Se quiser manter o formato original, pode usar img.format
             img.save(caminho_final)
-
             print(f"Imagem salva com sucesso em: {caminho_final}")
-            return caminho_final
+            await file.seek(0)
+            dados_pagamento, dados_cnpj = await scrape_images_from_gemini(file=file)
+            print(f"Dados extraídos da imagem: {dados_pagamento}")
+            print(f"Dados da empresa consultados: {dados_cnpj}")
+            
+            return dados_pagamento, dados_cnpj
 
         except Exception as e:
             print(f"Erro ao processar imagem: {e}")
