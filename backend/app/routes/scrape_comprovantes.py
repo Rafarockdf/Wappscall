@@ -1,17 +1,18 @@
+import pdfplumber
+import io
+import re
 from fastapi import APIRouter, UploadFile, File, Form
 import shutil
 import os
 import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
-from backend.app.services.image_pdf_service import save_data_image_pdf_file
 
-
+from backend.app.services.api_gemini import scrape_images_from_gemini
 router = APIRouter()
 
-@router.post("/uploads")
-async def upload_file(file: UploadFile = File(...), telefone: str = Form(...)):
-    
-    dados_nota, dados_cnpj = await save_data_image_pdf_file(file, telefone)
-    
+
+@router.post("/images/scrape")
+async def scrape_image_gemini(file: UploadFile = File(...)):
+    dados_nota, dados_cnpj = await scrape_images_from_gemini(file=file)
     return {"status": "sucesso", "dados": dados_nota, "dados_cnpj": dados_cnpj}

@@ -14,5 +14,5 @@ router = APIRouter()
 
 @router.get("/emails/scrape")
 async def scrape_emails():
-    dados = await scrape_emails_from_gmail()
-    return {"status": "sucesso", "dados": dados}
+    dados_nota, dados_cnpj = await scrape_emails_from_gmail()
+    return {"status": "sucesso", "dados": dados_nota, "dados_cnpj": dados_cnpj}

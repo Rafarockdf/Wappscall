@@ -7,13 +7,16 @@ from dotenv import load_dotenv
 import io
 import shutil
 from pathlib import Path
+
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
+from backend.app.services.data_hora_atual import obter_data_hora_atual
+from backend.app.services.api_gemini import scrape_images_from_gemini
 load_dotenv()
-async def save_image_file(file: UploadFile):
-    # 1. Puxar o caminho da variável de ambiente (com um fallback para 'uploads')
+async def save_data_image_pdf_file(file: UploadFile, telefone: str):
     pasta_destino = os.getenv('CAMINHO_ARQUIVOS')
     print(file.content_type)
+    print(telefone)
     # 2. Criar a pasta se ela não existir
     if not os.path.exists(pasta_destino):
         os.makedirs(pasta_destino)
@@ -27,15 +30,20 @@ async def save_image_file(file: UploadFile):
 
             # 4. Definir o caminho final
             # Usamos o nome original do arquivo ou um nome padrão
-            nome_arquivo = f"copy_{file.filename}"
+            data_hora_atual = obter_data_hora_atual()
+            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
             caminho_final = os.path.join(pasta_destino_img, nome_arquivo)
 
             # 5. Salvar a imagem
             # Se quiser manter o formato original, pode usar img.format
             img.save(caminho_final)
-
             print(f"Imagem salva com sucesso em: {caminho_final}")
-            return caminho_final
+            await file.seek(0) # Volta para o início do arquivo para que possa ser lido novamente
+            dados_pagamento, dados_cnpj = await scrape_images_from_gemini(file=file)
+            print(f"Dados extraídos da imagem: {dados_pagamento}")
+            print(f"Dados da empresa consultados: {dados_cnpj}")
+            
+            return dados_pagamento, dados_cnpj
 
         except Exception as e:
             print(f"Erro ao processar imagem: {e}")
@@ -44,8 +52,9 @@ async def save_image_file(file: UploadFile):
         try:
             pasta_destino_pdf = pasta_destino + '/pdf'
             # Ler o conteúdo do PDF
-
-            caminho_completo = os.path.join(pasta_destino_pdf, file.filename)
+            data_hora_atual = obter_data_hora_atual()
+            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
+            caminho_completo = os.path.join(pasta_destino_pdf, nome_arquivo)
 
             with open(caminho_completo, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)

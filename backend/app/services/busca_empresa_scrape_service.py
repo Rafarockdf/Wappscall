@@ -12,12 +12,15 @@ URL_API_BUSCA_CNPJ = os.getenv("URL_API_BUSCA_CNPJ")
 
 async def consultar_cnpj(cnpj):
     # 1. Blindagem contra variáveis nulas do .env
+    
+    cnpj_tratado = str(cnpj.replace(".", "").replace("/", "").replace("-", ""))
+    
     if not URL_API_BUSCA_CNPJ:
         print("Erro: A variável URL_API_BUSCA_CNPJ não foi encontrada no .env")
         return None
 
     # Substitui a tag {cnpj} pelo cnpj real
-    url = URL_API_BUSCA_CNPJ.replace("CNPJ", str(cnpj))
+    url = URL_API_BUSCA_CNPJ.replace("CNPJ", str(cnpj_tratado))
 
     headers = {
         "User-Agent": "Mozilla/5.0"
