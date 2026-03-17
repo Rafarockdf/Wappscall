@@ -5,11 +5,9 @@ class BackendClient:
         self.base_url = base_url
 
     async def upload_comprovante(self, file_bytes: bytes, file_name: str, content_type: str):
-        # Rota correta conforme o seu backend/app/main.py
         url = f"{self.base_url.rstrip('/')}/uploads/uploads"
         
         data = aiohttp.FormData()
-        # Aqui enviamos o arquivo com o NOME ORIGINAL e o TIPO correto
         data.add_field('file', 
                        file_bytes, 
                        filename=file_name, 
