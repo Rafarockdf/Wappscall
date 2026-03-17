@@ -4,10 +4,6 @@ caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from backend.app.routes import bot_data_route
 
-
-
-from backend.app.services.image_service import save_image_file
-
 from fastapi import FastAPI, Depends, status, APIRouter, UploadFile
 from typing import List
 #from sqlalchemy.orm import Session
@@ -20,13 +16,15 @@ from fastapi.middleware.cors import CORSMiddleware
 #models.Base.metadata.create_all(bind=engine)
 from backend.app.routes import bot_data_route
 from backend.app.routes import scrape_pdf_email
-from backend.app.routes import scrape_image_gemini
+from backend.app.routes import scrape_comprovantes
+from backend.app.routes import cadastra_user
 app = FastAPI()
 
 
 app.include_router(bot_data_route.router, prefix="/uploads")
 app.include_router(scrape_pdf_email.router)
-app.include_router(scrape_image_gemini.router)
+app.include_router(scrape_comprovantes.router)
+app.include_router(cadastra_user.router)
 # Configuração para permitir que o React converse com o FastAPI
 origins = [
     "http://localhost:3001", # Porta padrão do React
