@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 import shutil
 import os
 import sys
@@ -11,7 +11,8 @@ router = APIRouter()
 
 @router.post("/uploads")
 async def upload_file(file: UploadFile = File(...), telefone: str = Form(...)):
-    
-    dados_nota, dados_cnpj = await save_data_image_pdf_file(file, telefone)
-    
+    resultado = await save_data_image_pdf_file(file, telefone)
+    if not resultado or (resultado[0] is None and resultado[1] is None):
+        raise HTTPException(status_code=500, detail="Erro ao processar o arquivo")
+    dados_nota, dados_cnpj = resultado
     return {"status": "sucesso", "dados": dados_nota, "dados_cnpj": dados_cnpj}

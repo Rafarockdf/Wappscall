@@ -16,6 +16,7 @@ usuario = os.getenv("EMAIL_USER")
 senha = os.getenv("EMAIL_TOKEN")
 print(f"Usuário: {usuario}")
 print(f"Senha: {senha}")
+
 async def scrape_emails_from_gmail():
     with MailBox("imap.gmail.com").login(usuario, senha) as meu_email:
             compr_emails = meu_email.fetch(AND(subject="Comprovante de pagamento", seen=False), mark_seen=False)

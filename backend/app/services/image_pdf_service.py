@@ -12,7 +12,9 @@ caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from backend.app.services.data_hora_atual import obter_data_hora_atual
 from backend.app.services.api_gemini import scrape_images_from_gemini
+from backend.app.services.telegram_pdf_scrape import scrape_pdf
 load_dotenv()
+
 async def save_data_image_pdf_file(file: UploadFile, telefone: str):
     pasta_destino = os.getenv('CAMINHO_ARQUIVOS')
     print(file.content_type)
@@ -50,20 +52,24 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             return None
     elif file.content_type == 'application/pdf':
         try:
-            pasta_destino_pdf = pasta_destino + '/pdf'
-            # Ler o conteúdo do PDF
+            pasta_destino_pdf = os.path.join(pasta_destino, 'pdf')
+            os.makedirs(pasta_destino_pdf, exist_ok=True)
+
             data_hora_atual = obter_data_hora_atual()
-            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
+            nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}"
             caminho_completo = os.path.join(pasta_destino_pdf, nome_arquivo)
 
+            pdf_bytes = await file.read()
             with open(caminho_completo, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-    
-            return {
-                "mensagem": "Upload realizado com sucesso!",
-                "nome_arquivo": file.filename,
-                "caminho_salvo": str(pasta_destino_pdf)
-            }
+                buffer.write(pdf_bytes)
+
+            print(f"PDF salvo com sucesso em: {caminho_completo}")
+            await file.seek(0)
+
+            dados_pagamento, dados_cnpj = await scrape_pdf(pdf_bytes)
+            print(f"Dados extraídos do PDF: {dados_pagamento}")
+            print(f"Dados da empresa consultados: {dados_cnpj}")
+            return dados_pagamento, dados_cnpj
 
         except Exception as e:
             print(f"Erro ao processar PDF: {e}")
