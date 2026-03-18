@@ -1,0 +1,76 @@
+.gastos-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gastos-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-size: 0.9rem;
+}
+
+.gastos-table thead {
+  background-color: #1a1a2e;
+  color: #fff;
+}
+
+.gastos-table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gastos-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.15s;
+}
+
+.gastos-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.gastos-table tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gastos-table .col-descricao {
+  max-width: 180px;
+}
+
+.gastos-table .col-valor {
+  text-align: right;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-aprovado {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-pendente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-extornado {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
