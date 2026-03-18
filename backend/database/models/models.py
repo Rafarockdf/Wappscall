@@ -16,6 +16,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     
+    
 
 class Funcionario(Base):
     __tablename__ = 'funcionarios'
@@ -24,10 +25,9 @@ class Funcionario(Base):
     nome = Column(String, nullable=False)
     cargo = Column(String, nullable=False)
     salario = Column(Float, nullable=False)
+    telefone = Column(String, nullable=False)
     data_contratacao = Column(DateTime, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    
-    owner = relationship("User", back_populates="items")
+
 
 class gastos(Base):
     __tablename__ = 'gastos'
@@ -44,7 +44,7 @@ class gastos(Base):
     ramo_atividade = Column(String, nullable=False)
     categoria = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'))
-
+    
     tipo_gasto = Column(String, nullable=False)  # Ex: Dinheiro Empresa, Dinheiro Funcionário, etc.
 
     arquivo_extracao = Column(String, nullable=True) # Caminho para o arquivo scrape
@@ -59,8 +59,8 @@ class gastos(Base):
     funcionario_id = Column(Integer, ForeignKey('funcionarios.id'))
 
 
-    Funcionario = relationship("Funcionario", back_populates="gastos")
-    User = relationship("User", back_populates="gastos")
+    user = relationship("User", back_populates="gastos")
+    funcionario = relationship("Funcionario", back_populates="gastos")
     
 
 
@@ -71,7 +71,7 @@ class ErrosScraping(Base):
     tipo_erro = Column(String, nullable=False)
     descricao_erro = Column(String, nullable=False)
     data_ocorrencia = Column(DateTime, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    funcionario_id = Column(Integer, ForeignKey('funcionarios.id'))
     arquivo_log = Column(String, nullable=True)  # Caminho para o arquivo de log, se aplicável
     arquivo_extracao = Column(String, nullable=True)  # Caminho para o arquivo scrape
-    
+    user = relationship("Funcionario", back_populates="erros")
