@@ -1,5 +1,5 @@
 from backend.app.repositories.base_repo import BaseRepo
-from backend.database.models.models import User, Funcionario, gastos, ErrosScraping
+from backend.database.models.models import User, Funcionario, Gastos, ErrosScraping
 from sqlalchemy.orm import Session
 
 class UserRepo(BaseRepo[User]):
@@ -13,9 +13,9 @@ class FuncionarioRepo(BaseRepo[Funcionario]):
     def __init__(self):
         super().__init__(Funcionario)
         
-class GastosRepo(BaseRepo[gastos]):
+class GastosRepo(BaseRepo[Gastos]):
     def __init__(self):
-        super().__init__(gastos)
+        super().__init__(Gastos)
         
 class ErrosScrapingRepo(BaseRepo[ErrosScraping]):
     def __init__(self):

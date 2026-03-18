@@ -18,7 +18,12 @@ from backend.app.routes import scrape_pdf_email
 from backend.app.routes import scrape_comprovantes
 from backend.app.routes import cadastra_user
 from backend.app.routes import gastos_route
+from backend.database.config.base import Base
+from backend.database.config.connection import DBConnectionHandler
 
+# Isso cria todas as tabelas que ainda não existem
+db = DBConnectionHandler()
+db.create_tables(Base)
 app = FastAPI()
 
 

@@ -10,6 +10,7 @@ sys.path.insert(0, caminho_absoluto)
 #from backend.app.services.email_scrape_service import scrape_emails_from_gmail
 from backend.app.services.funcionario_service import FuncionarioService
 from imap_tools import MailBox, AND
+from datetime import datetime
 router = APIRouter()
 
 
@@ -18,7 +19,7 @@ async def cadastra_user(nome: str = Form(...), cargo: str = Form(...), salario: 
     print(f"Recebido: nome={nome}, cargo={cargo}, salario={salario}, telefone={telefone}, data_contratacao={data_contratacao}")
     
     salario_float = float(salario)
-    
+    data = datetime.strptime(data_contratacao, "%Y-%m-%d")
     funcionario_service = FuncionarioService()
-    json = funcionario_service.cadastrar_funcionario(nome, cargo, salario_float, telefone, data_contratacao)
+    json = funcionario_service.cadastrar_funcionario(nome, cargo, salario_float, data,telefone)
     return {"status": "sucesso", "dados": json}
