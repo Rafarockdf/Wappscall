@@ -55,7 +55,6 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             cnpj = dados_pagamento.get("cnpj", "Desconecido")
             data = dados_pagamento.get("data", "Desconecido")
             data = datetime.strptime(data, "%Y-%m-%d").date() if data != "Desconecido" else "Desconecido"
-            horario = dados_pagamento.get("horario", "Desconecido")
             
             razao_social = dados_cnpj.get("razao_social", "Desconecido")
             estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
@@ -107,12 +106,18 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             dados_pagamento, dados_cnpj = await scrape_pdf(pdf_bytes)
             print(f"Dados extraídos do PDF: {dados_pagamento}")
             print(f"Dados da empresa consultados: {dados_cnpj}")
-            
+            print(type(dados_cnpj) == dict)
             valor = dados_pagamento.get("valor", 0)
             cnpj = dados_pagamento.get("cnpj", "Desconecido")
-            data = dados_pagamento.get("data", "Desconecido")
-            data = datetime.strptime(data, "%Y-%m-%d").date() if data != "Desconecido" else "Desconecido"
-            horario = dados_pagamento.get("horario", "Desconecido")
+            data_str = dados_pagamento.get("data", "Desconecido")
+            print(f"Data extraída do PDF (objeto datetime): {data_str}")
+            if data_str != "Desconecido":
+                data_obj = datetime.strptime(data_str, "%d/%m/%Y")
+                print(f"Data extraída do PDF (objeto datetime): {data_obj}")
+                data_sql = data_obj.strftime("%Y-%m-%d")
+                print(f"Data convertida para formato SQL: {data_sql}")
+            else:
+                data_sql = None
             
             razao_social = dados_cnpj.get("razao_social", "Desconecido")
             estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
@@ -121,6 +126,14 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             
             func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
             print(f"ID do funcionário encontrado: {func_id}")
+            
+            
+            # 1. Lê o formato brasileiro
+            objeto_data = datetime.strptime(data, "%d/%m/%Y")
+
+            # 2. Transforma no formato que o SQLite/MySQL aceita
+            data_sql = objeto_data.strftime("%Y-%m-%d")
+
 
             gastos_service.cadastrar_gasto(
                 funcionario_id=func_id,
@@ -128,7 +141,7 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
                 descricao=f"Comprovante enviado via WhatsApp: {file.filename}",
                 valor=valor,
                 cnpj=cnpj,
-                data=data, # Certifique-se que já converteu para date!
+                data=data_sql, # Certifique-se que já converteu para date!
                 empresa=estabelecimento,
                 razao_social=razao_social,
                 ramo_atividade=ramo,
