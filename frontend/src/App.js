@@ -1,9 +1,11 @@
 import { useState } from "react";
 import RegistrarFuncionarioPage from "./pages/RegistrarFuncionarioPage";
 import GastosPage from "./pages/GastosPage";
+import DashboardPage from "./pages/DashboardPage";
 
 const menuItems = [
   { id: "gastos", label: "Gastos Corporativos" },
+  { id: "dashboard", label: "Dashboard" },
   { id: "funcionario", label: "Registrar Funcionário" },
 ];
 
@@ -33,6 +35,7 @@ function App() {
       {/* Conteúdo */}
       <main className="flex-1">
         {pagina === "gastos" && <GastosPage />}
+        {pagina === "dashboard" && <DashboardPage />}
         {pagina === "funcionario" && <RegistrarFuncionarioPage />}
       </main>
     </div>

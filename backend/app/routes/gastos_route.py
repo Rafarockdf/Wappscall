@@ -23,9 +23,10 @@ class GastoResponse(BaseModel):
     data_extorno: Optional[str] = None
     arquivo_extracao: Optional[str] = None
     funcionario_id: Optional[int] = None
+    funcionario_nome: Optional[str] = None
 
 
 @router.get("/gastos", response_model=list[GastoResponse])
 def listar_gastos():
-    from backend.app.services.gastos_service import get_gastos_mock
-    return get_gastos_mock()
+    from backend.app.services.gastos_service import get_gastos
+    return get_gastos()
