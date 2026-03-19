@@ -59,8 +59,9 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             razao_social = dados_cnpj.get("razao_social", "Desconecido")
             estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
             estabelecimento.strip() if estabelecimento else "Desconecido"
-            categoria = dados_cnpj.get("cnae_principal", "Desconecido")
-            ramo = dados_cnpj.get("cnae_principal", "Desconecido")
+            cnae_principal = dados_cnpj.get("cnae_principal") or {}
+            categoria = cnae_principal.get("descricao", "Desconhecido") if isinstance(cnae_principal, dict) else str(cnae_principal)
+            ramo = categoria
             
             
             func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
@@ -122,8 +123,10 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             razao_social = dados_cnpj.get("razao_social", "Desconecido")
             estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
             estabelecimento.strip() if estabelecimento else "Desconecido"
-            categoria = dados_cnpj.get("cnae_principal", "Desconecido")
-            
+            cnae_principal = dados_cnpj.get("cnae_principal") or {}
+            categoria = cnae_principal.get("descricao", "Desconhecido") if isinstance(cnae_principal, dict) else str(cnae_principal)
+            ramo = categoria
+
             func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
             print(f"ID do funcionário encontrado: {func_id}")
             
