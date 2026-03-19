@@ -21,5 +21,5 @@ async def cadastra_user(nome: str = Form(...), cargo: str = Form(...), salario: 
     salario_float = float(salario)
     data = datetime.strptime(data_contratacao, "%Y-%m-%d")
     funcionario_service = FuncionarioService()
-    json = funcionario_service.cadastrar_funcionario(nome, cargo, salario_float, data,telefone)
+    json = await funcionario_service.cadastrar_funcionario(nome, cargo, salario_float, data,telefone)
     return {"status": "sucesso", "dados": json}
