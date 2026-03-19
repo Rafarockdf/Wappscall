@@ -20,7 +20,7 @@ function GastosTable({ gastos }) {
       <table className="min-w-full bg-white text-sm text-gray-700">
         <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
           <tr>
-            {["ID", "Motivo", "Descrição", "Valor", "Data", "Empresa", "Categoria", "Tipo de Gasto", "Status"].map((col) => (
+            {["ID","Funcionário", "Motivo","Valor", "Data", "Razão Social", "CNPJ", "Categoria", "Tipo de Gasto", "Status"].map((col) => (
               <th key={col} className="px-4 py-3 text-left">{col}</th>
             ))}
           </tr>
@@ -29,11 +29,12 @@ function GastosTable({ gastos }) {
           {gastos.map((gasto) => (
             <tr key={gasto.id} className="hover:bg-gray-50 transition-colors">
               <td className="px-4 py-3">{gasto.id}</td>
+              <td className="px-4 py-3">{gasto.funcionario_nome ?? "-"}</td>
               <td className="px-4 py-3">{gasto.motivo ?? "-"}</td>
-              <td className="px-4 py-3 max-w-xs truncate" title={gasto.descricao}>{gasto.descricao ?? "-"}</td>
               <td className="px-4 py-3 font-medium">{gasto.valor != null ? formatValor(gasto.valor) : "-"}</td>
               <td className="px-4 py-3">{formatData(gasto.data)}</td>
-              <td className="px-4 py-3">{gasto.empresa ?? "-"}</td>
+              <td className="px-4 py-3">{gasto.razao_social ?? "-"}</td>
+              <td className="px-4 py-3">{gasto.cnpj ?? "-"}</td>
               <td className="px-4 py-3">{gasto.categoria ?? "-"}</td>
               <td className="px-4 py-3">{gasto.tipo_gasto ?? "-"}</td>
               <td className="px-4 py-3">
