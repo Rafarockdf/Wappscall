@@ -28,7 +28,7 @@ async def scrape_images_from_gemini(file: UploadFile):
     {
         "valor": 50.50,
         "cnpj": "XX.XXX.XXX/0001-XX",
-        "data": "DD-MM-YYYY",
+        "data": "YYYY-MM-DD",
         "horario": "HH:MM"
     }
 ```"
@@ -47,5 +47,5 @@ async def scrape_images_from_gemini(file: UploadFile):
     json_final = json.loads(json_final)
     print(json_final)
     dados_cnpj = await consultar_cnpj(json_final["cnpj"])
-    print(dados_cnpj)
+    print(dados_cnpj)  
     return json_final, dados_cnpj

@@ -12,6 +12,8 @@ class UserRepo(BaseRepo[User]):
 class FuncionarioRepo(BaseRepo[Funcionario]):
     def __init__(self):
         super().__init__(Funcionario)
+    def buscar_por_telefone(self, db: Session, telefone: str) -> Funcionario:
+        return db.query(self.model).filter(self.model.telefone == telefone).first()
         
 class GastosRepo(BaseRepo[Gastos]):
     def __init__(self):

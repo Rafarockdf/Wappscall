@@ -3,7 +3,7 @@ from backend.app.repositories.repositories import funcionario_repo # Use a inst√
 from datetime import datetime
 
 class FuncionarioService:
-    def criar_funcionario(self, nome, cargo, salario, data_contratacao, telefone):
+    async def criar_funcionario(self, nome, cargo, salario, data_contratacao, telefone):
         with DBConnectionHandler() as db:
             session = db.get_session()
             
@@ -19,5 +19,10 @@ class FuncionarioService:
             # O BaseRepo vai receber o dicion√°rio e fazer o trabalho de criar o objeto
             return funcionario_repo.inserir(session, dados_funcionario)
         
-    def cadastrar_funcionario(self, nome, cargo, salario, data_contratacao, telefone):
-        return self.criar_funcionario(nome, cargo, salario, data_contratacao, telefone)
+    async def cadastrar_funcionario(self, nome, cargo, salario, data_contratacao, telefone):
+        return await self.criar_funcionario(nome, cargo, salario, data_contratacao, telefone)
+    async def get_funcionario_id_by_telefone(self, telefone):
+        with DBConnectionHandler() as db:
+            session = db.get_session()
+            funcionario = funcionario_repo.buscar_por_telefone(session, telefone)
+            return funcionario.id if funcionario else None

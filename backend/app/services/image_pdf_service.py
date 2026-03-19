@@ -6,13 +6,18 @@ from dotenv import load_dotenv
 import io
 import shutil
 from pathlib import Path
-
+from datetime import datetime
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from backend.app.services.data_hora_atual import obter_data_hora_atual
 from backend.app.services.api_gemini import scrape_images_from_gemini
 from backend.app.services.telegram_pdf_scrape import scrape_pdf
+from backend.app.services.gastos_service_crud import GastosService
+from backend.app.services.funcionario_service import FuncionarioService
 load_dotenv()
+
+gastos_service = GastosService()
+funcionario_service = FuncionarioService()
 
 async def save_data_image_pdf_file(file: UploadFile, telefone: str):
     pasta_destino = os.getenv('CAMINHO_ARQUIVOS')
@@ -32,6 +37,7 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             # 4. Definir o caminho final
             # Usamos o nome original do arquivo ou um nome padrão
             data_hora_atual = obter_data_hora_atual()
+            
             nome_arquivo = f"comprovante_{telefone}_{data_hora_atual}_{file.filename}" 
             caminho_final = os.path.join(pasta_destino_img, nome_arquivo)
 
@@ -43,6 +49,39 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             dados_pagamento, dados_cnpj = await scrape_images_from_gemini(file=file)
             print(f"Dados extraídos da imagem: {dados_pagamento}")
             print(f"Dados da empresa consultados: {dados_cnpj}")
+            
+            
+            valor = dados_pagamento.get("valor", 0)
+            cnpj = dados_pagamento.get("cnpj", "Desconecido")
+            data = dados_pagamento.get("data", "Desconecido")
+            data = datetime.strptime(data, "%Y-%m-%d").date() if data != "Desconecido" else "Desconecido"
+            horario = dados_pagamento.get("horario", "Desconecido")
+            
+            razao_social = dados_cnpj.get("razao_social", "Desconecido")
+            estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
+            estabelecimento.strip() if estabelecimento else "Desconecido"
+            categoria = dados_cnpj.get("cnae_principal", "Desconecido")
+            ramo = dados_cnpj.get("cnae_principal", "Desconecido")
+            
+            
+            func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
+            print(f"ID do funcionário encontrado: {func_id}")
+
+            gastos_service.cadastrar_gasto(
+                funcionario_id=func_id,
+                motivo=dados_pagamento.get("categoria") or "Consumo",
+                descricao=f"Comprovante enviado via WhatsApp: {file.filename}",
+                valor=valor,
+                cnpj=cnpj,
+                data=data, # Certifique-se que já converteu para date!
+                empresa=estabelecimento,
+                razao_social=razao_social,
+                ramo_atividade=ramo,
+                categoria=categoria,
+                arquivo_extracao=caminho_final,
+                tipo_gasto="Dinheiro Funcionário"
+            )
+            print(f"Gasto cadastrado com sucesso para o funcionário ID: {func_id}")
             
             return dados_pagamento, dados_cnpj
 
@@ -68,6 +107,37 @@ async def save_data_image_pdf_file(file: UploadFile, telefone: str):
             dados_pagamento, dados_cnpj = await scrape_pdf(pdf_bytes)
             print(f"Dados extraídos do PDF: {dados_pagamento}")
             print(f"Dados da empresa consultados: {dados_cnpj}")
+            
+            valor = dados_pagamento.get("valor", 0)
+            cnpj = dados_pagamento.get("cnpj", "Desconecido")
+            data = dados_pagamento.get("data", "Desconecido")
+            data = datetime.strptime(data, "%Y-%m-%d").date() if data != "Desconecido" else "Desconecido"
+            horario = dados_pagamento.get("horario", "Desconecido")
+            
+            razao_social = dados_cnpj.get("razao_social", "Desconecido")
+            estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
+            estabelecimento.strip() if estabelecimento else "Desconecido"
+            categoria = dados_cnpj.get("cnae_principal", "Desconecido")
+            
+            func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
+            print(f"ID do funcionário encontrado: {func_id}")
+
+            gastos_service.cadastrar_gasto(
+                funcionario_id=func_id,
+                motivo=dados_pagamento.get("categoria") or "Consumo",
+                descricao=f"Comprovante enviado via WhatsApp: {file.filename}",
+                valor=valor,
+                cnpj=cnpj,
+                data=data, # Certifique-se que já converteu para date!
+                empresa=estabelecimento,
+                razao_social=razao_social,
+                ramo_atividade=ramo,
+                categoria=categoria,
+                arquivo_extracao=caminho_final,
+                tipo_gasto="Dinheiro Funcionário"
+            )
+            print(f"Gasto cadastrado com sucesso para o funcionário ID: {func_id}")
+            
             return dados_pagamento, dados_cnpj
 
         except Exception as e:
