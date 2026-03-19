@@ -42,6 +42,7 @@ def register_handlers(bot):
             # Envia para o backend (que vai gravar na pasta uploads)
             telefone = await solicitar_telefone(message, bot)
             print(f"DEBUG: Telefone recebido do usuário: {telefone}")
+            telefone = telefone.replace("+", "").replace("55", "")  # Limpeza básica do número
             await api_client.upload_comprovante(downloaded_file, file_name, content_type, telefone)
             await bot.reply_to(message, f"✅ Arquivo {file_name} enviado e armazenado!")
             

@@ -10,13 +10,17 @@ sys.path.insert(0, caminho_absoluto)
 from imap_tools import MailBox, AND
 from dotenv import load_dotenv
 from backend.app.services.busca_empresa_scrape_service import consultar_cnpj
+from backend.app.services.funcionario_service import FuncionarioService
+from backend.app.services.gastos_service_crud import GastosService
+from datetime import datetime
 
 load_dotenv()
 usuario = os.getenv("EMAIL_USER")
 senha = os.getenv("EMAIL_TOKEN")
 print(f"Usuário: {usuario}")
 print(f"Senha: {senha}")
-
+funcionario_service = FuncionarioService()
+gastos_service = GastosService()
 async def scrape_emails_from_gmail():
     with MailBox("imap.gmail.com").login(usuario, senha) as meu_email:
             compr_emails = meu_email.fetch(AND(subject="Comprovante de pagamento", seen=False), mark_seen=False)
@@ -74,8 +78,51 @@ async def scrape_emails_from_gmail():
                     print(f"CNPJ:    {resultado_anexos[0]['cnpj']}")
                     print(f"CNPJTTT:    {cnpj_tratado}")
                     dados_cnpj = await consultar_cnpj(str(cnpj_tratado))
-                    return dados_cnpj
+                    
+                    dados = resultado_anexos[0]
+
+                    valor = dados.get("valor", 0)
+                    valor = float(valor.replace(".", "").replace(",", ".")) if valor else 0
+
+                    cnpj = dados.get("cnpj", "Desconecido")
+                    cnpj_tratado = re.sub(r"\D", "", cnpj)
+
+                    data_str = dados.get("data", "Desconecido")
+
+                    if data_str != "Desconecido":
+                        data_obj = datetime.strptime(data_str, "%d/%m/%Y").date()
+                    else:
+                        data_obj = None
+
+                    dados_cnpj = await consultar_cnpj(cnpj_tratado)
+                    dados_cnpj = dados_cnpj if isinstance(dados_cnpj, dict) else {}
+
+                    razao_social = dados_cnpj.get("razao_social", "Desconecido")
+                    estabelecimento = dados_cnpj.get("nome_fantasia", "Desconecido")
+
+                    cnae_principal = dados_cnpj.get("cnae_principal") or {}
+                    categoria = cnae_principal.get("descricao", "Desconhecido") if isinstance(cnae_principal, dict) else str(cnae_principal)
+
+                    telefone = email.from_
+
+                    func_id = await funcionario_service.get_funcionario_id_by_telefone(telefone)
+
+                    gastos_service.cadastrar_gasto(
+                        funcionario_id=func_id,
+                        motivo="Consumo",
+                        descricao=f"Comprovante recebido por e-mail: {dados.get('arquivo')}",
+                        valor=valor,
+                        cnpj=cnpj,
+                        data=data_obj,
+                        empresa=estabelecimento,
+                        razao_social=razao_social,
+                        ramo_atividade=categoria,
+                        categoria=categoria,
+                        arquivo_extracao=None,
+                        tipo_gasto="Dinheiro Funcionário"
+                    )
+                    
+                    return resultado_anexos[0], dados_cnpj
+                    
                 else:
                     print(f"ℹ️ E-mail de '{email.from_}' processado, mas nenhum anexo PDF válido foi encontrado.")
-
-            print("✅ Processamento finalizado.")

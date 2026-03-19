@@ -80,15 +80,12 @@ async def scrape_pdf(pdf_bytes):
         "cnpj": data['cnpj']
     }
 
-    # 1. Lê o formato brasileiro
-    objeto_data = datetime.strptime(data['data'], "%d/%m/%Y")
-
-    # 2. Transforma no formato que o SQLite/MySQL aceita
-    data_sql = objeto_data.strftime("%Y-%m-%d")
+    dados_pagamento['valor'] = float(data['valor'].replace("R$", "").replace(".", "").replace(",", ".")) if data['valor'] else None
+    print(f"Dados extraídos do PDF: {dados_pagamento}")
 
     cnpj_tratado = dados_pagamento['cnpj'].replace(".", "").replace("/", "").replace("-", "") if dados_pagamento['cnpj'] else None
     print(f"CNPJ extraído do PDF: {dados_pagamento['cnpj']} -> Tratado: {cnpj_tratado}")
     dados_cnpj = await consultar_cnpj(str(cnpj_tratado))
-    print(f"Dados da empresa consultados: {data_sql}")
+    print(f"Dados da empresa consultados: {dados_cnpj}")
 
-    return dados_pagamento, data_sql
+    return dados_pagamento, dados_cnpj
