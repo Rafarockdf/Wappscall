@@ -2,7 +2,7 @@ import { useState } from "react";
 import { cadastraUser } from "../services/userService";
 
 export default function RegistrarFuncionarioPage() {
-  const [form, setForm] = useState({ cargo: "", salario: "", dt_contratacao: "" });
+  const [form, setForm] = useState({nome: "", cargo: "", salario: "", data_contratacao: "" ,telefone: ""});
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,6 +33,19 @@ export default function RegistrarFuncionarioPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
+            <label className="block text-sm text-gray-600 mb-1">Nome</label>
+            <input
+              type="text"
+              name="nome"
+              value={form.nome}
+              onChange={handleChange}
+              required
+              placeholder="Ex: João Silva"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+          
+          <div>
             <label className="block text-sm text-gray-600 mb-1">Cargo</label>
             <input
               type="text"
@@ -61,13 +74,28 @@ export default function RegistrarFuncionarioPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Data de Contratação</label>
+            <label className="block text-sm text-gray-600 mb-1">Telefone</label>
             <input
-              type="date"
-              name="dt_contratacao"
-              value={form.dt_contratacao}
+              type="text"
+              name="telefone"
+              value={form.telefone}
               onChange={handleChange}
               required
+              placeholder="Ex: (11) 99999-9999"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Data de Contratação</label>
+            <input
+              type="text"
+              name="data_contratacao"
+              value={form.data_contratacao}
+              onChange={handleChange}
+              required
+              placeholder="Ex: 2023-01-01"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>

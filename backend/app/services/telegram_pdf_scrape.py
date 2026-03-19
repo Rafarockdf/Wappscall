@@ -6,7 +6,7 @@ import json
 import io
 import os
 import sys
-
+from datetime import datetime
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from backend.app.services.busca_empresa_scrape_service import consultar_cnpj
@@ -80,9 +80,15 @@ async def scrape_pdf(pdf_bytes):
         "cnpj": data['cnpj']
     }
 
+    # 1. Lê o formato brasileiro
+    objeto_data = datetime.strptime(data['data'], "%d/%m/%Y")
+
+    # 2. Transforma no formato que o SQLite/MySQL aceita
+    data_sql = objeto_data.strftime("%Y-%m-%d")
+
     cnpj_tratado = dados_pagamento['cnpj'].replace(".", "").replace("/", "").replace("-", "") if dados_pagamento['cnpj'] else None
     print(f"CNPJ extraído do PDF: {dados_pagamento['cnpj']} -> Tratado: {cnpj_tratado}")
     dados_cnpj = await consultar_cnpj(str(cnpj_tratado))
-    print(f"Dados da empresa consultados: {dados_cnpj}")
+    print(f"Dados da empresa consultados: {data_sql}")
 
-    return dados_pagamento, dados_cnpj
+    return dados_pagamento, data_sql

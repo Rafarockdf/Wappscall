@@ -17,7 +17,7 @@ class DBConnectionHandler:
         self.session = None
 
     def get_session(self):
-        return self.session()
+        return self.session
     
     def __create_database_engine(self):
         engine = create_engine(f'sqlite:///{self.db_path}')
@@ -36,3 +36,11 @@ class DBConnectionHandler:
 
     def create_tables(self, Base):
         Base.metadata.create_all(self.__engine)
+
+class Database:
+    def __init__(self, url):
+        engine = create_engine(url)
+        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    def get_session(self):
+        return self.SessionLocal()
