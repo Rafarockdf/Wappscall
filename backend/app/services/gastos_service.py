@@ -1,5 +1,6 @@
 from backend.database.config.connection import DBConnectionHandler
 from backend.app.repositories.repositories import gastos_repo
+from datetime import datetime
 
 
 def get_gastos() -> list[dict]:
@@ -29,3 +30,28 @@ def get_gastos() -> list[dict]:
                 "funcionario_nome": g.funcionario.nome if g.funcionario else None,
             })
         return result
+
+
+def atualizar_status_gasto(gasto_id: int, status: dict) -> bool:
+    with DBConnectionHandler() as db:
+        session = db.get_session()
+
+        gasto = gastos_repo.buscar_por_id(session, gasto_id)
+        if not gasto:
+            return False
+
+        gasto.boolean_aprovado = status["aprovado"]
+        gasto.boolean_extornado = status["extornado"]
+
+        if status["aprovado"]:
+            gasto.data_aprovacao = datetime.now().date()
+        else:
+            gasto.data_aprovacao = None
+
+        if status["extornado"]:
+            gasto.data_extorno = datetime.now().date()
+        else:
+            gasto.data_extorno = None
+
+        session.commit()
+        return True

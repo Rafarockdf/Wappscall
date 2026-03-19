@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import GastosTable from "../components/GastosTable/GastosTable";
-import { fetchGastos } from "../services/gastosService";
+import { fetchGastos, atualizarStatusGasto } from "../services/gastosService";
 
 function GastosPage() {
   const [gastos, setGastos] = useState([]);
@@ -13,6 +13,23 @@ function GastosPage() {
       .catch(setError)
       .finally(() => setLoading(false));
   }, []);
+
+  const handleStatusChange = async (gastoId, novoStatus) => {
+    await atualizarStatusGasto(gastoId, novoStatus);
+
+    // Atualizar o gasto na lista local
+    setGastos(prevGastos =>
+      prevGastos.map(gasto =>
+        gasto.id === gastoId
+          ? {
+              ...gasto,
+              boolean_aprovado: novoStatus === 'Aprovado',
+              boolean_extornado: novoStatus === 'Extornado'
+            }
+          : gasto
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -31,7 +48,7 @@ function GastosPage() {
         </div>
       )}
 
-      {!loading && !error && <GastosTable gastos={gastos} />}
+      {!loading && !error && <GastosTable gastos={gastos} onStatusChange={handleStatusChange} />}
     </div>
   );
 }

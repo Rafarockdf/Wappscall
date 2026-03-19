@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const formatValor = (valor) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
 
@@ -6,15 +8,50 @@ const formatData = (data) => {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(data));
 };
 
-function StatusBadge({ aprovado, extornado }) {
-  if (extornado)
-    return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">Extornado</span>;
-  if (aprovado)
-    return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Aprovado</span>;
-  return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">Pendente</span>;
+function StatusDropdown({ gasto, onStatusChange }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getStatusText = () => {
+    if (gasto.boolean_extornado) return 'Extornado';
+    if (gasto.boolean_aprovado) return 'Aprovado';
+    return 'Pendente';
+  };
+
+  const getStatusClass = () => {
+    if (gasto.boolean_extornado) return 'bg-red-100 text-red-700';
+    if (gasto.boolean_aprovado) return 'bg-green-100 text-green-700';
+    return 'bg-yellow-100 text-yellow-700';
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      await onStatusChange(gasto.id, newStatus);
+    } catch (error) {
+      console.error('Erro ao alterar status:', error);
+      alert('Erro ao alterar status do gasto');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <select
+      value={getStatusText()}
+      onChange={(e) => handleStatusChange(e.target.value)}
+      disabled={isLoading}
+      className={`px-2 py-1 text-xs font-semibold rounded border-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${getStatusClass()}`}
+    >
+      <option value="Pendente">Pendente</option>
+      <option value="Aprovado">Aprovado</option>
+      <option value="Extornado">Extornado</option>
+    </select>
+  );
 }
 
-function GastosTable({ gastos }) {
+function GastosTable({ gastos, onStatusChange }) {
   return (
     <div className="overflow-x-auto rounded-lg shadow">
       <table className="min-w-full bg-white text-sm text-gray-700">
@@ -38,7 +75,7 @@ function GastosTable({ gastos }) {
               <td className="px-4 py-3">{gasto.categoria ?? "-"}</td>
               <td className="px-4 py-3">{gasto.tipo_gasto ?? "-"}</td>
               <td className="px-4 py-3">
-                <StatusBadge aprovado={gasto.boolean_aprovado} extornado={gasto.boolean_extornado} />
+                <StatusDropdown gasto={gasto} onStatusChange={onStatusChange} />
               </td>
             </tr>
           ))}
